@@ -107,22 +107,31 @@ public enum EventType: String, Codable {
 }
 
 // See https://github.com/discord/discord-api-docs/blob/55cd3d71082e9dc31cbd007a6e74b1cd6a82beeb/docs/resources/User.md#user-flags
-public enum UserFlag: Int, Codable {
-    case none                      = 0
-    case discordEmployee           = 1
-    case partneredServerOwner      = 2
-    case hypesquadEvents           = 4
-    case bugHunterLevel1           = 8
-    case normalUser                = 32 // NOTE: not documented but this is the one I got for my user during my tests...
-    case houseBravery              = 64
-    case houseBrilliance           = 128
-    case houseBalance              = 256
-    case earlySupporter            = 512
-    case teamUser                  = 1024
-    case bugHunterLevel2           = 16384
-    case verifiedBot               = 65536
-    case earlyVerifiedBotDeveloper = 131072
-    case discordCertifiedModerator = 262144
+public struct UserFlag: Codable, OptionSet {
+  public let rawValue: Int
+
+  public static let discordEmployee           = UserFlag(rawValue: 1 << 0)
+  public static let partneredServerOwner      = UserFlag(rawValue: 1 << 1)
+  public static let hypesquadEvents           = UserFlag(rawValue: 1 << 2)
+  public static let bugHunterLevel1           = UserFlag(rawValue: 1 << 3)
+
+  public static let normalUser                = UserFlag(rawValue: 1 << 5) // NOTE: not documented but this is the one I got for my user during my tests...
+
+  public static let houseBravery              = UserFlag(rawValue: 1 << 6)
+  public static let houseBrilliance           = UserFlag(rawValue: 1 << 7)
+  public static let houseBalance              = UserFlag(rawValue: 1 << 8)
+  public static let earlySupporter            = UserFlag(rawValue: 1 << 9)
+  public static let teamUser                  = UserFlag(rawValue: 1 << 10)
+  public static let bugHunterLevel2           = UserFlag(rawValue: 1 << 14)
+  public static let verifiedBot               = UserFlag(rawValue: 1 << 16)
+  public static let earlyVerifiedBotDeveloper = UserFlag(rawValue: 1 << 17)
+  public static let discordCertifiedModerator = UserFlag(rawValue: 1 << 18)
+  public static let botHttpInteractions       = UserFlag(rawValue: 1 << 19)
+  public static let activeDeveloper           = UserFlag(rawValue: 1 << 22)
+
+  public init(rawValue: Int) {
+    self.rawValue = rawValue
+  }
 }
 
 // See https://github.com/discord/discord-api-docs/blob/55cd3d71082e9dc31cbd007a6e74b1cd6a82beeb/docs/resources/User.md#premium-types
