@@ -145,7 +145,7 @@ public enum PremiumType: Int, Codable {
 // Internal constants //
 // ------------------ //
 // See https://github.com/discord/discord-rpc/blob/963aa9f3e5ce81a4682c6ca3d136cddda614db33/src/rpc_connection.h#L17
-enum OPCode: UInt32 {
+public enum OPCode: UInt32 {
     case handshake = 0
     case frame     = 1
     case close     = 2

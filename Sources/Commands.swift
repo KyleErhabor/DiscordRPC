@@ -102,7 +102,7 @@ extension DiscordRPC {
         self.receive()
     }
 
-    private func syncResponse(requestJSON: String, nonce: String, disableTimeout: Bool = false) throws -> Data {
+    public func syncResponse(requestJSON: String, nonce: String, disableTimeout: Bool = false) throws -> Data {
         let semaphore = DispatchSemaphore(value: 0)
         var notification: Notification?
         var response: Data

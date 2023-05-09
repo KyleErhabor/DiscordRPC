@@ -16,7 +16,7 @@ extension DiscordRPC {
         self.socket = nil
     }
 
-    func send(_ msg: String, _ opCode: OPCode) throws {
+    public func send(_ msg: String, _ opCode: OPCode) throws {
         let payload = msg.data(using: .utf8)!
         var buffer = UnsafeMutableRawBufferPointer.allocate(
                 byteCount: 8 + payload.count,
