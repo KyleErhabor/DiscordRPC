@@ -33,47 +33,49 @@ extension DiscordRPC {
     }
 
     func receive() {
-        self.rpcWorker.async { [unowned self] in
-            while true {
-                guard let isConnected = self.socket?.isConnected, isConnected else {
-                    self.disconnectHandler?(self, EventClose(code: .socketDisconnected, message: "Socket Disconnected"))
-                    return
-                }
+      self.rpcWorker.async { [unowned self] in
+        while true  {
+          guard self.socket?.isConnected == true else {
+            self.disconnectHandler?(self, EventClose(code: .socketDisconnected, message: "Socket Disconnected"))
+            return
+          }
 
-                do {
-                    let headerPtr = UnsafeMutablePointer<Int8>.allocate(capacity: 8)
-                    let headerRawPtr = UnsafeRawPointer(headerPtr)
-                    defer { free(headerPtr) }
+          do {
+            let headerPtr = UnsafeMutablePointer<Int8>.allocate(capacity: 8)
+            let headerRawPtr = UnsafeRawPointer(headerPtr)
+            defer { free(headerPtr) }
 
-                    var response = try self.socket?.read(into: headerPtr, bufSize: 8, truncate: true)
-                    guard response! > 0 else {
-                        logger.warning("Receive: header length is 0")
-                        continue
-                    }
+            var response = try self.socket?.read(into: headerPtr, bufSize: 8, truncate: true)
+            guard response! > 0 else {
+              logger.warning("Receive: header length is 0. Was Discord closed?")
+              closeSocket()
 
-                    let opValue = headerRawPtr.load(as: UInt32.self)
-                    let length = headerRawPtr.load(fromByteOffset: 4, as: UInt32.self)
-                    guard length > 0, let op = OPCode(rawValue: opValue) else {
-                        logger.warning("Receive: opcode length is 0")
-                        continue
-                    }
-
-                    let payloadPtr = UnsafeMutablePointer<Int8>.allocate(capacity: Int(length))
-                    defer { free(payloadPtr) }
-
-                    response = try self.socket?.read(into: payloadPtr, bufSize: Int(length), truncate: true)
-                    guard response! > 0 else {
-                        logger.warning("Receive: payload length is 0")
-                        continue
-                    }
-
-                    let data = Data(bytes: UnsafeRawPointer(payloadPtr), count: Int(length))
-                    self.handlePayload(op, data)
-                } catch {
-                    logger.error("Receive: failed with error: \(error.localizedDescription)")
-                }
+              return
             }
+
+            let opValue = headerRawPtr.load(as: UInt32.self)
+            let length = headerRawPtr.load(fromByteOffset: 4, as: UInt32.self)
+            guard length > 0, let op = OPCode(rawValue: opValue) else {
+              logger.warning("Receive: opcode length is 0")
+              continue
+            }
+
+            let payloadPtr = UnsafeMutablePointer<Int8>.allocate(capacity: Int(length))
+            defer { free(payloadPtr) }
+
+            response = try self.socket?.read(into: payloadPtr, bufSize: Int(length), truncate: true)
+            guard response! > 0 else {
+              logger.warning("Receive: payload length is 0")
+              continue
+            }
+
+            let data = Data(bytes: UnsafeRawPointer(payloadPtr), count: Int(length))
+            self.handlePayload(op, data)
+          } catch {
+            logger.error("Receive: failed with error: \(error.localizedDescription)")
+          }
         }
+      }
     }
 
     private func handlePayload(_ opCode: OPCode, _ data: Data) {
