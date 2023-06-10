@@ -12,8 +12,8 @@ extension DiscordRPC {
     }
 
     func closeSocket() {
-        self.socket?.close()
-        self.socket = nil
+      self.socket?.close()
+      self.socket = nil
     }
 
     public func send(_ msg: String, _ opCode: OPCode) throws {
@@ -50,7 +50,7 @@ extension DiscordRPC {
               logger.warning("Receive: header length is 0. Was Discord closed?")
               closeSocket()
 
-              return
+              continue
             }
 
             let opValue = headerRawPtr.load(as: UInt32.self)

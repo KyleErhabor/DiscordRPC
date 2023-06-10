@@ -17,7 +17,7 @@ public class DiscordRPC {
     var errorHandler:      ((_ rpc: DiscordRPC, _ nonce: String, _ eventError: EventError) -> Void)?
     var eventHandler:      ((_ rpc: DiscordRPC, _ eventType: EventType, _ event: Data) -> Void)?
 
-    var socket: Socket?
+    public var socket: Socket?
     let rpcWorker: DispatchQueue
     let handlerWorker: DispatchQueue
     let cmdNotifCenter: NotificationCenter
